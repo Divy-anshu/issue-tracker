@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Detail</title>
+    <style>
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #571919;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            margin-top: 10px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+        }
+
+        .issue {
+            background-color: #eee;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+        .filter-container {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+    }
+
+    .filter-container select, .search-container input[type="text"] {
+        margin-right: 10px;
+    }
+    a {
+    text-decoration: none; /* Remove underline from all anchor tags */
+}
+
+.button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            color: #fff;
+            background-color: #ff004c;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Button hover effect */
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1><%= project.name %></h1>
+        <p><b>Project id:</b> <%= project.id %></p>
+        <p><b>Description:</b> <%= project.description %></p>
+        <p><b>Author:</b> <%= project.author %></p>
+        <hr/>
+
+        <!-- Add this HTML code within the container div in projectDetail.ejs file -->
+        <div class="filter-container">
+            <label for="labelFilter">Filter by Label:</label>
+            <select id="labelFilter" onchange="filterByLabel(this.value)">
+                <option value="">All</option>
+                <!-- Populate with unique labels from issues -->
+            </select>
+
+            <label for="authorFilter">Filter by Author:</label>
+            <input type="text" id="authorFilter" onkeyup="filterByAuthor(this.value)" placeholder="Enter author name">
+
+            <div class="search-container">
+                <label for="searchInput">Search:</label>
+                <input type="text" id="searchInput" onkeyup="searchIssues(this.value)" placeholder="Enter keyword">
+            </div>
+        </div>
+
+
+        <!-- Project Issues -->
+        <% if (issues.length===0) { %>
+            <p>No issues found for this project.</p>
+            <% } else { %>
+                <% issues.forEach(issue=> { %>
+                    <div class="issue">
+                        <h3 class="title"> 
+                            <%= issue.title %>
+                        </h3>
+                        <p class="description">
+                            <%= issue.description %>
+                        </p>
+                        <% if (issue.labels) { %>
+                            <p class="labels">Labels:
+                                <% const labelsArray=issue.labels.split(',').map(label=> label.trim());
+                                    labelsArray.forEach(label => { %>
+                                    <%= label %>&nbsp;
+                                        <% }); %>
+                            </p>
+                            <% } %>
+                                <p>Author: <span class="author"><%= issue.author %></span>
+                                </p>
+                    </div>
+                    <% }); %>
+                        <% } %>
+
+                            <a href="/projects/<%= project.id %>/issues/create"><button class="button">Create Issue</button> </a>
+    </div>
+
+    <!-- JavaScript for filtering and searching -->
+    <!-- Add this JavaScript code to the end of your projectDetail.ejs file -->
+<script>
+    // Function to filter issues by labels
+    function filterByLabel(label) {
+        const issues = document.querySelectorAll('.issue');
+        issues.forEach(issue => {
+            const labels = issue.querySelector('.labels').textContent.toLowerCase();
+            if (labels.includes(label.toLowerCase())) {
+                issue.style.display = 'block';
+            } else {
+                issue.style.display = 'none';
+            }
+        });
+    }
+
+    // Function to filter issues by author
+    function filterByAuthor(author) {
+        const issues = document.querySelectorAll('.issue');
+        issues.forEach(issue => {
+            const issueAuthor = issue.querySelector('.author').textContent.toLowerCase();
+            if (issueAuthor.includes(author.toLowerCase())) {
+                issue.style.display = 'block';
+            } else {
+                issue.style.display = 'none';
+            }
+        });
+    }
+
+    // Function to search for issues by title and description
+    function searchIssues(keyword) {
+        const issues = document.querySelectorAll('.issue');
+        issues.forEach(issue => {
+            const title = issue.querySelector('.title').textContent.toLowerCase();
+            const description = issue.querySelector('.description').textContent.toLowerCase();
+            if (title.includes(keyword.toLowerCase()) || description.includes(keyword.toLowerCase())) {
+                issue.style.display = 'block';
+            } else {
+                issue.style.display = 'none';
+            }
+        });
+    }
+
+    function populateLabelsSelect() {
+        const issues = document.querySelectorAll('.issue');
+        const labelsSet = new Set();
+
+        // Extract unique labels from each issue
+        issues.forEach(issue => {
+            const labels = issue.querySelector('.labels').textContent.split(' ').map(label => label.trim());
+            labels.forEach(label => {
+                // Exclude the word "label"
+                if (!label.toLowerCase().includes('label')) {
+                    labelsSet.add(label);
+                }
+            });
+        });
+
+        // Sort labels alphabetically
+        const labelsArray = Array.from(labelsSet).sort();
+
+        // Populate select dropdown with options
+        const labelFilterSelect = document.getElementById('labelFilter');
+        labelsArray.forEach(label => {
+            const option = document.createElement('option');
+            option.value = label;
+            option.textContent = label;
+            labelFilterSelect.appendChild(option);
+        });
+    }
+
+    // Call the function to populate select dropdown when the page loads
+    window.addEventListener('DOMContentLoaded', populateLabelsSelect);
+
+</script>
+
+</body>
+
+</html>

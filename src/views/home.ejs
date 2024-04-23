@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Issue Tracker - Home</title>
+    <style>
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #4a4848;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .project {
+            background-color: #fff;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        a {
+            text-decoration: none;
+            /* Remove underline */
+            color: inherit;
+            /* Inherit color from parent */
+        }
+
+        a:visited {
+            color: inherit;
+            /* Inherit color from parent */
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            text-transform: uppercase;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Button hover effect */
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div style="display:flex;  align-items: center; justify-content: space-between;">
+            <div>
+                <h1 style="color: white;">Projects</h1>
+            </div>
+            <div><a href="/projects/create"><button class="button">Create</button> </a></div>
+        </div>
+
+
+        <% if (projects.length===0) { %>
+            <p style="color: white;">No projects found.</p>
+            <% } else { %>
+                <% projects.forEach(project=> { %>
+                    <a href="/projects/<%= project.id %>">
+                        <div class="project">
+                            <h2>
+                                <%= project.name %>
+                            </h2>
+                            <p>
+                                <%= project.description %>
+                            </p>
+                            <p><b>Author:</b> <%= project.author %>
+                            </p>
+                        </div>
+                    </a>
+                    <% }); %>
+                        <% } %>
+    </div>
+</body>
+
+</html>
